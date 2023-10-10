@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  flask-app:
+    build:
+      context: flask-app
+    networks:
+      - private-net-1
+      - public-net-1
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:4.4
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - private-net-1
+
+  nginx:
+    networks:
+      - public-net-1
+
+    build:
+      context: nginx
+    ports:
+      - 8080:80
+    depends_on:
+      - flask-app
+
+networks:
+  private-net-1:
+    driver: bridge
+  public-net-1:
+    driver: bridge
+
+volumes:
+  mongodata:
+    driver: local
+
